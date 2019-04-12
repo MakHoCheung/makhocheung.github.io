@@ -1,0 +1,44 @@
+#!/usr/bin/env kscript
+
+import java.io.*
+import java.lang.Exception
+import java.util.*
+import kotlin.system.exitProcess
+
+try {
+    println("begin prepare commit")
+    println("Loading...")
+    for(i in 0..100){
+        Thread.sleep(20)
+        print("\u001b[1000D\u001b[31m$i%")
+    }
+    println("\u001b[0m")
+    println("please input the commit type (like feat,fix,etc):")
+    System.setIn(FileInputStream("/dev/tty"))
+    val sc = Scanner(System.`in`)
+    val type = if (sc.hasNextLine()) sc.nextLine() else "noneF"
+    println("please input the scope (like webmail,webadmin,etc):")
+    val scope = if (sc.hasNextLine()) sc.nextLine() else "noneS"
+    println("please input the commit msg:")
+    val msg = if (sc.hasNextLine()) sc.nextLine() else "noneM"
+    val branch = "git symbolic-ref --short HEAD".runCommand()
+    println("your current branch is $branch")
+    BufferedWriter(FileWriter(File(args[0]))).use {
+        it.write("""$type($scope) : $msg #$branch
+
+close: #$branch
+        """.trimIndent())
+    }
+} catch (e: Exception) {
+    println("\u001b[31mError occurs!!! This commit abort!\u001b[0m")
+    e.printStackTrace()
+    exitProcess(1)
+}
+exitProcess(0)
+
+fun String.runCommand(dir: File? = null): String =
+        ProcessBuilder("/bin/sh", "-c", this)
+                .redirectErrorStream(true)
+                .directory(dir)
+                .start()
+                .inputStream.bufferedReader().readLine()

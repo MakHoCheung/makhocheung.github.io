@@ -7,3 +7,7 @@
 - [bash alias](./bash-alias.md)
 
 - [idea keymap](./ide_keymap.md)
+
+### cellebi-option javadocs
+
+[entry](./docs/javadoc/index.html)
